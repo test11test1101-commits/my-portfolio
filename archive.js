@@ -68,6 +68,12 @@ if (menuButton && navigation) {
       if (menuButton.getAttribute("aria-expanded") === "true") closeMenu();
     }
   });
+
+  navigation.addEventListener("click", e => {
+    if (e.target.closest("a")) {
+      closeMenu();
+    }
+  });
 }
 
 /* 3. HTML Escaping Utility */

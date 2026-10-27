@@ -153,12 +153,38 @@ if (menuButton && navigation) {
     if (!targetLink) return;
     closeMenu();
 
-    const targetSection = document.querySelector(targetLink.getAttribute("href"));
-    if (targetSection) {
-      targetSection.setAttribute("tabindex", "-1");
-      targetSection.focus({ preventScroll: true });
+    const href = targetLink.getAttribute("href");
+    if (href && href.startsWith("#")) {
+      try {
+        const targetSection = document.querySelector(href);
+        if (targetSection) {
+          targetSection.setAttribute("tabindex", "-1");
+          targetSection.focus({ preventScroll: true });
+        }
+      } catch (_) {}
     }
   });
+
+  // Desktop dropdown touch & accessibility support
+  const dropdownTrigger = document.querySelector(".nav-dropdown-trigger");
+  const dropdownMenu = document.querySelector(".nav-dropdown-menu");
+  if (dropdownTrigger && dropdownMenu) {
+    dropdownTrigger.addEventListener("click", event => {
+      if (event.target.closest(".dropdown-chevron") || window.matchMedia("(hover: none)").matches) {
+        event.preventDefault();
+        const isOpen = dropdownTrigger.getAttribute("aria-expanded") === "true";
+        dropdownTrigger.setAttribute("aria-expanded", String(!isOpen));
+        dropdownMenu.classList.toggle("is-active", !isOpen);
+      }
+    });
+
+    document.addEventListener("click", event => {
+      if (!dropdownTrigger.contains(event.target) && !dropdownMenu.contains(event.target)) {
+        dropdownTrigger.setAttribute("aria-expanded", "false");
+        dropdownMenu.classList.remove("is-active");
+      }
+    });
+  }
 
   document.addEventListener("keydown", event => {
     if (event.key === "Escape" && menuButton.getAttribute("aria-expanded") === "true") {
