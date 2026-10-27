@@ -539,33 +539,49 @@ window.moveProject = async function(index, direction) {
 // Modal Openers
 const modalTitle = document.getElementById("modal-title");
 const projIdInput = document.getElementById("proj-id");
-const projThumbInput = document.getElementById("proj-thumb");
+const projThumbInput = document.getElementById("proj-thumbnail");
 const thumbFileInput = document.getElementById("thumb-file-input");
 const thumbPreviewBox = document.getElementById("thumb-preview-box");
 const thumbPreviewImg = document.getElementById("thumb-preview-img");
 
 function clearThumbPreview() {
-  projThumbInput.value = "";
-  thumbPreviewImg.src = "";
-  thumbPreviewBox.hidden = true;
+  if (projThumbInput) projThumbInput.value = "";
+  if (thumbPreviewImg) thumbPreviewImg.src = "";
+  if (thumbPreviewBox) thumbPreviewBox.hidden = true;
 }
 
 function setThumbPreview(url) {
-  projThumbInput.value = url;
-  thumbPreviewImg.src = url;
-  thumbPreviewBox.hidden = false;
+  if (projThumbInput) projThumbInput.value = url;
+  if (thumbPreviewImg) thumbPreviewImg.src = url;
+  if (thumbPreviewBox) thumbPreviewBox.hidden = false;
 }
 
-document.getElementById("btn-open-project-modal").addEventListener("click", () => {
+window.openNewProject = function() {
   modalTitle.textContent = "New Project";
   projectForm.reset();
   projIdInput.value = "";
   clearThumbPreview();
   projectModal.hidden = false;
-});
+};
 
-document.getElementById("btn-close-project-modal").addEventListener("click", () => projectModal.hidden = true);
-document.getElementById("btn-cancel-project").addEventListener("click", () => projectModal.hidden = true);
+window.closeProjectModal = function() {
+  projectModal.hidden = true;
+};
+
+const btnOpenProjectModal = document.getElementById("btn-new-project");
+if (btnOpenProjectModal) {
+  btnOpenProjectModal.addEventListener("click", window.openNewProject);
+}
+
+const btnCloseProjectModal = document.getElementById("btn-close-modal");
+if (btnCloseProjectModal) {
+  btnCloseProjectModal.addEventListener("click", window.closeProjectModal);
+}
+
+const btnCancelProject = document.getElementById("btn-cancel-modal");
+if (btnCancelProject) {
+  btnCancelProject.addEventListener("click", window.closeProjectModal);
+}
 
 window.openEditProject = function(id) {
   const p = appData.projects.find(item => item.id === id);
