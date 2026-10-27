@@ -1,0 +1,661 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Personal portfolio of Your Name — programming, technical support, and video editing. Explore concept projects across code, systems, and storytelling.">
+  <meta name="theme-color" content="#edf0f6">
+  <title>Your Name — Code. Systems. Stories.</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 36 36'%3E%3Ccircle cx='18' cy='18' r='12' fill='none' stroke='%230d0f17' stroke-width='2'/%3E%3Cline x1='4' y1='32' x2='32' y2='4' stroke='%230d0f17' stroke-width='2'/%3E%3Ccircle cx='30' cy='6' r='3' fill='%237928ca'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="styles.css">
+  <script src="script.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <!-- =========================================================================
+       HEADER NAVIGATION
+       ========================================================================= -->
+  <header class="site-header shell">
+    <a class="brand" href="#home" aria-label="Portfolio home">
+      <svg class="orbit-logo-svg" viewBox="0 0 40 40" width="36" height="36" aria-hidden="true">
+        <circle cx="20" cy="20" r="13" fill="none" stroke="currentColor" stroke-width="1.8"/>
+        <line x1="5" y1="35" x2="35" y2="5" stroke="currentColor" stroke-width="1.8"/>
+        <circle cx="32" cy="8" r="2.8" fill="var(--accent)"/>
+      </svg>
+      <span class="brand-name" data-profile="name">YOUR NAME</span>
+    </a>
+
+    <button class="menu-toggle" type="button" aria-controls="navigation" aria-expanded="false" hidden>
+      <span class="menu-label">Menu</span>
+      <span class="menu-bars" aria-hidden="true">
+        <span></span><span></span><span></span>
+      </span>
+    </button>
+
+    <nav id="navigation" aria-label="Main navigation">
+      <a href="#work">Work</a>
+      <a href="#capabilities">Capabilities</a>
+      <a href="#about">About</a>
+      <a href="#contact">Contact</a>
+    </nav>
+
+    <button class="contrast-toggle" type="button" aria-pressed="false" hidden>
+      <span class="contrast-icon" aria-hidden="true">◐</span>
+      <span class="contrast-text">High contrast</span>
+      <span class="switch" aria-hidden="true"></span>
+    </button>
+
+    <div class="header-detail" aria-hidden="true">
+      <span class="slash-accents">//////</span>
+      <span class="detail-divider"></span>
+      <div class="detail-stack">
+        <span>IDEAS</span>
+        <span>SYSTEMS</span>
+        <span>SUPPORT</span>
+        <span>STORIES</span>
+      </div>
+    </div>
+  </header>
+
+  <main id="main">
+    <!-- =========================================================================
+         HERO SECTION
+         ========================================================================= -->
+    <section class="hero shell" id="home" aria-labelledby="hero-title">
+      <div class="hero-copy">
+        <p class="eyebrow"><span class="eyebrow-rule"></span> DIGITAL SYSTEMS. HUMAN IDEAS.</p>
+        <h1 id="hero-title">Build the <span class="accent">next.</span><br>Keep it running.<br>Make it move.</h1>
+        <p class="hero-intro">Programming, technical support, and video editing — connected by one creative mind.</p>
+        
+        <div class="hero-actions">
+          <a class="button primary" href="#work">
+            <span>Explore projects</span>
+            <span class="arrow-disc" aria-hidden="true">→</span>
+          </a>
+          <a class="button secondary" href="#contact">
+            <span>Let’s connect</span>
+            <span class="secondary-arrow" aria-hidden="true">→</span>
+          </a>
+        </div>
+
+        <div class="hero-annotation hero-note">
+          <span class="annotation-bar"></span>
+          <p class="micro">ORBITING<br>IDEAS<br>INTO<br>REAL SOLUTIONS.</p>
+        </div>
+      </div>
+
+      <!-- Orbital Hero Scene Artwork -->
+      <div class="orbital-scene" aria-label="Illustration of a futuristic metallic orbital core with neon violet rings, surrounded by code, support, and video editing concept panels" role="img">
+        <div class="orbital-stage">
+          <div class="orbital-ambient-glow" aria-hidden="true"></div>
+          
+          <!-- Central 3D Futuristic Core Graphic & Pedestal -->
+          <div class="orbital-core-container">
+            <img class="orbital-core-image" src="assets/orbital-core.jpg" alt="" aria-hidden="true" width="560" height="560" loading="eager">
+          </div>
+
+          <!-- Floating Card 01: Build / Code Panel -->
+          <div class="floating-panel build-panel glass-dark">
+            <div class="panel-heading">
+              <span class="panel-tag"><i class="status-dot green"></i> BUILD</span>
+              <span class="panel-num">01</span>
+              <span class="panel-dots" aria-hidden="true">···</span>
+            </div>
+            <pre class="code-snippet"><code><span class="code-comment">// Build</span>
+<span class="code-keyword">const</span> <span class="code-fn">ideas</span> = () =&gt; {
+  <span class="code-return">return</span> better
+    .<span class="code-call">products</span>();
+};</code></pre>
+          </div>
+
+          <!-- Floating Card 02: Support Status Panel -->
+          <div class="floating-panel support-panel glass-dark">
+            <div class="panel-heading">
+              <span class="panel-tag"><i class="status-dot green"></i> SUPPORT</span>
+              <span class="panel-num">02</span>
+              <span class="panel-dots" aria-hidden="true">···</span>
+            </div>
+            <ul class="support-list">
+              <li>
+                <span class="support-item"><span class="icon-circle green-tint">✓</span> System Online</span>
+                <span class="check-icon">✓</span>
+              </li>
+              <li>
+                <span class="support-item"><span class="icon-circle green-tint">✓</span> Network Stable</span>
+                <span class="check-icon">✓</span>
+              </li>
+              <li>
+                <span class="support-item"><span class="icon-circle green-tint">✓</span> Services Running</span>
+                <span class="check-icon">✓</span>
+              </li>
+              <li>
+                <span class="support-item"><span class="icon-circle green-tint">✓</span> All Clear</span>
+                <span class="check-icon">✓</span>
+              </li>
+            </ul>
+          </div>
+
+          <!-- Floating Card 03: Video Edit Panel -->
+          <div class="floating-panel edit-panel glass-dark">
+            <div class="panel-heading">
+              <span class="panel-tag"><i class="status-dot green"></i> EDIT</span>
+              <span class="panel-num">03</span>
+              <span class="panel-dots" aria-hidden="true">···</span>
+            </div>
+            <div class="mini-video-player">
+              <img src="assets/mountain-preview.jpg" alt="Cinematic landscape preview" width="260" height="130" loading="eager">
+              <span class="mini-play-btn" aria-hidden="true">▶</span>
+            </div>
+            <div class="mini-timeline" aria-hidden="true">
+              <div class="timeline-tracks">
+                <span class="track tr-purple"></span>
+                <span class="track tr-blue"></span>
+                <span class="track tr-green"></span>
+                <span class="track tr-yellow"></span>
+              </div>
+              <div class="timeline-waveform-mini">
+                <svg viewBox="0 0 160 8" preserveAspectRatio="none"><path d="M0,4 L10,1 L20,7 L30,2 L40,6 L50,1 L60,7 L70,3 L80,5 L90,1 L100,7 L110,2 L120,6 L130,1 L140,7 L150,3 L160,4" stroke="#9d50ff" stroke-width="1.2" fill="none"/></svg>
+              </div>
+              <div class="timeline-scrubber" style="left: 70%;"></div>
+            </div>
+          </div>
+
+          <div class="hero-annotation scene-note">
+            <span class="annotation-bar"></span>
+            <p class="micro">SAME TOOLS.<br>BRIGHTER<br>POSSIBILITIES.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         ORBIT STRIP / FILTER TABS
+         ========================================================================= -->
+    <div class="orbit-strip shell" id="work-strip">
+      <div class="filters" role="tablist" aria-label="Filter projects by specialty">
+        <button class="filter-tab active" type="button" role="tab" data-filter="development" aria-selected="true">
+          <span class="tab-index">01 /</span> DEVELOPMENT
+        </button>
+        <button class="filter-tab" type="button" role="tab" data-filter="support" aria-selected="false">
+          <span class="tab-index">02 /</span> TECH SUPPORT
+        </button>
+        <button class="filter-tab" type="button" role="tab" data-filter="video" aria-selected="false">
+          <span class="tab-index">03 /</span> VIDEO EDITING
+        </button>
+      </div>
+      <div class="strip-legend" aria-hidden="true">
+        <span class="legend-line"></span>
+        <span class="legend-text">THREE SKILLS.<br>A WIDER ORBIT.</span>
+      </div>
+    </div>
+
+    <!-- =========================================================================
+         WORK IN ORBIT SECTION
+         ========================================================================= -->
+    <section class="work-section shell section" id="work" aria-labelledby="work-title">
+      <div class="section-heading">
+        <div>
+          <h2 id="work-title">Work in orbit<span class="accent">.</span></h2>
+          <p class="section-sub">Concept projects across code, systems, and storytelling.</p>
+        </div>
+        <span class="micro section-code" aria-hidden="true">— IDEAS → SYSTEMS → STORIES —</span>
+      </div>
+
+      <p id="filter-status" class="sr-only" role="status" aria-live="polite" aria-atomic="true">
+        Showing all 3 concept projects across development, tech support, and video editing.
+      </p>
+
+      <!-- Projects Grid: 01 Left Tall, 02 Top-Right, 03 Bottom-Right -->
+      <div class="project-grid" id="project-grid">
+        
+        <!-- Project 01: Web Development (Nova Workspace) -->
+        <article class="project-card development-card glass" data-category="development">
+          <div class="project-label">
+            <span class="concept-badge"><i class="status-dot green"></i> CONCEPT PROJECT</span>
+            <span class="project-num">01</span>
+          </div>
+
+          <div class="project-visual dashboard-visual" aria-hidden="true">
+            <div class="dashboard-window">
+              <!-- Nova Sidebar -->
+              <aside class="dash-sidebar">
+                <div class="dash-logo">
+                  <span class="dash-logo-icon">✳</span> NOVA
+                </div>
+                <nav class="dash-nav">
+                  <span class="dash-item active">◈ Dashboard</span>
+                  <span class="dash-item">↗ Analytics</span>
+                  <span class="dash-item">▦ Projects</span>
+                  <span class="dash-item">⚙ Settings</span>
+                </nav>
+              </aside>
+
+              <!-- Nova Main Content Area -->
+              <div class="dash-content">
+                <div class="dash-topbar">
+                  <div class="dash-search-mock">🔍</div>
+                  <div class="dash-user-mock">👤</div>
+                </div>
+
+                <div class="dash-banner">
+                  <div class="dash-banner-text">
+                    <h4 class="dash-heading">Good ideas<br>build real momentum.</h4>
+                    <p class="dash-desc">Turn your ideas into useful products.</p>
+                  </div>
+                  <span class="mock-button">New Project →</span>
+                </div>
+
+                <!-- Area Wave Chart with time selector -->
+                <div class="dash-chart-box">
+                  <div class="chart-header">
+                    <span class="chart-title">Activity Curve</span>
+                    <span class="chart-period">This month ▾</span>
+                  </div>
+                  <svg class="dash-chart-svg" viewBox="0 0 380 90" preserveAspectRatio="none">
+                    <defs>
+                      <linearGradient id="chartGrad" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stop-color="#8b5cf6" stop-opacity="0.45"/>
+                        <stop offset="100%" stop-color="#8b5cf6" stop-opacity="0.0"/>
+                      </linearGradient>
+                    </defs>
+                    <path d="M0,75 C45,70 70,35 110,48 C150,60 180,25 220,38 C260,50 300,15 340,25 C360,30 375,18 380,15 L380,90 L0,90 Z" fill="url(#chartGrad)"/>
+                    <path d="M0,75 C45,70 70,35 110,48 C150,60 180,25 220,38 C260,50 300,15 340,25 C360,30 375,18 380,15" fill="none" stroke="#7928ca" stroke-width="2.5" stroke-linecap="round"/>
+                  </svg>
+                </div>
+
+                <!-- 4 KPI Metrics matching visual reference -->
+                <div class="dash-metrics-grid">
+                  <div class="dash-kpi">
+                    <span class="kpi-label">Active Users</span>
+                    <strong class="kpi-val">1,248</strong>
+                    <span class="kpi-trend green-text">↑ 12%</span>
+                  </div>
+                  <div class="dash-kpi">
+                    <span class="kpi-label">Projects</span>
+                    <strong class="kpi-val">12</strong>
+                    <span class="kpi-trend green-text">↑ 33%</span>
+                  </div>
+                  <div class="dash-kpi">
+                    <span class="kpi-label">System Uptime</span>
+                    <strong class="kpi-val">99.9%</strong>
+                    <span class="kpi-trend green-text">↑ 0.1%</span>
+                  </div>
+                  <div class="dash-kpi">
+                    <span class="kpi-label">Tasks Completed</span>
+                    <strong class="kpi-val">86</strong>
+                    <span class="kpi-trend green-text">↑ 24%</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 3D Translucent Glass Platform / Acrylic Slab Reflection -->
+            <div class="dashboard-platform-reflection">
+              <div class="acrylic-edge"></div>
+              <div class="acrylic-body"></div>
+            </div>
+          </div>
+
+          <div class="project-copy">
+            <div class="project-copy-main">
+              <h3>Web development</h3>
+              <p>Modern, responsive web applications with clean, functional design.</p>
+              <div class="tags">
+                <span>HTML / CSS</span>
+                <span>JavaScript</span>
+                <span>UI Concept</span>
+                <span>Responsive</span>
+              </div>
+              <details class="concept-disclosure">
+                <summary>Explore the concept <span class="summary-arrow" aria-hidden="true">↗</span></summary>
+                <div class="disclosure-body">
+                  <p>Proposed scope: design and build a modular workspace dashboard with accessible controls, smooth data visualizations, and high responsiveness. Sample concept project created to demonstrate engineering and interface capabilities.</p>
+                  <a class="project-live-link" data-project-link="development" hidden>Live Project ↗</a>
+                </div>
+              </details>
+            </div>
+            <a class="card-circle-btn" href="#work" aria-label="Web development project details">
+              <span class="circle-btn-arrow" aria-hidden="true">→</span>
+            </a>
+          </div>
+        </article>
+
+        <!-- Project 02: Video Editing (Beyond the Frame) -->
+        <article class="project-card video-card glass" data-category="video">
+          <div class="project-label">
+            <span class="concept-badge"><i class="status-dot green"></i> CONCEPT PROJECT</span>
+            <span class="project-num">02</span>
+          </div>
+
+          <div class="project-visual video-visual" aria-hidden="true">
+            <div class="video-preview-frame">
+              <img src="assets/mountain-preview.jpg" alt="Cinematic landscape edit preview" width="600" height="260" loading="lazy">
+              <div class="video-play-disc">
+                <span class="play-triangle">▶</span>
+              </div>
+            </div>
+            <div class="nle-timeline-bar">
+              <div class="timeline-meta">
+                <span class="timeline-tc">SEQUENCE_01 / 00:01:24:18</span>
+                <span class="timeline-fps">24.00 FPS • 4K DCI</span>
+              </div>
+              <div class="timeline-multitrack">
+                <div class="track-block clip-purple" style="flex: 2.5;"><span>A01_WIDE</span></div>
+                <div class="track-block clip-blue" style="flex: 1.8;"><span>B02_DRONE</span></div>
+                <div class="track-block clip-green" style="flex: 2.2;"><span>C03_TWILIGHT</span></div>
+                <div class="track-block clip-yellow" style="flex: 1.5;"><span>OUTRO</span></div>
+              </div>
+              <div class="audio-waveform-row">
+                <svg class="waveform-svg" viewBox="0 0 500 16" preserveAspectRatio="none">
+                  <path d="M0,8 L10,3 L20,13 L30,4 L40,12 L50,2 L60,14 L70,5 L80,11 L90,1 L100,15 L110,4 L120,12 L130,3 L140,13 L150,5 L160,11 L170,2 L180,14 L190,4 L200,12 L210,3 L220,13 L230,1 L240,15 L250,4 L260,12 L270,3 L280,13 L290,5 L300,11 L310,2 L320,14 L330,4 L340,12 L350,3 L360,13 L370,5 L380,11 L390,2 L400,14 L410,4 L420,12 L430,3 L440,13 L450,1 L460,15 L470,4 L480,12 L490,6 L500,8" stroke="#9353d3" stroke-width="1.6" fill="none"/>
+                </svg>
+              </div>
+              <div class="nle-playhead-line" style="left: 74%;">
+                <span class="playhead-marker"></span>
+              </div>
+            </div>
+          </div>
+
+          <div class="project-copy">
+            <div class="project-copy-main">
+              <h3>Video editing</h3>
+              <p>Cinematic and engaging video content from concept to final cut.</p>
+              <div class="tags">
+                <span>Storytelling</span>
+                <span>Color Grading</span>
+                <span>Sound Design</span>
+                <span>Pacing</span>
+              </div>
+              <details class="concept-disclosure">
+                <summary>Explore the concept <span class="summary-arrow" aria-hidden="true">↗</span></summary>
+                <div class="disclosure-body">
+                  <p>Proposed scope: craft a narrative arc from raw footage, apply natural color harmonies, balance dynamic audio waveforms, and deliver multi-format exports. Concept demonstration showcasing pacing and editorial polish.</p>
+                  <a class="project-live-link" data-project-link="video" hidden>Live Project ↗</a>
+                </div>
+              </details>
+            </div>
+            <a class="card-circle-btn" href="#work" aria-label="Video editing project details">
+              <span class="circle-btn-arrow" aria-hidden="true">↗</span>
+            </a>
+          </div>
+        </article>
+
+        <!-- Project 03: Technical Support (Connected & Clear) -->
+        <article class="project-card support-card glass" data-category="support">
+          <div class="project-label">
+            <span class="concept-badge"><i class="status-dot green"></i> CONCEPT PROJECT</span>
+            <span class="project-num">03</span>
+          </div>
+
+          <div class="project-visual network-visual" aria-hidden="true">
+            <div class="network-diagram-container">
+              <!-- Left Stack: Client / Endpoint -->
+              <div class="network-column">
+                <div class="net-node" id="node-device">
+                  <span class="node-icon">💻</span>
+                  <div class="node-text">
+                    <span class="node-name">User Device</span>
+                    <span class="node-status green-status">• Online</span>
+                  </div>
+                </div>
+                <div class="net-node" id="node-network">
+                  <span class="node-icon">📶</span>
+                  <div class="node-text">
+                    <span class="node-name">Network</span>
+                    <span class="node-status green-status">• Healthy</span>
+                  </div>
+                </div>
+                <div class="net-node" id="node-app">
+                  <span class="node-icon">📦</span>
+                  <div class="node-text">
+                    <span class="node-name">Application</span>
+                    <span class="node-status green-status">• Running</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Center Hub with SVG circuit trace lines -->
+              <div class="network-hub-area">
+                <svg class="circuit-traces-svg" viewBox="0 0 160 180" preserveAspectRatio="none">
+                  <!-- Traces from left to center -->
+                  <path d="M 0,35 C 50,35 60,90 80,90" stroke="#38d672" stroke-width="2" fill="none" opacity="0.85"/>
+                  <path d="M 0,90 L 80,90" stroke="#a86bf5" stroke-width="2" fill="none" opacity="0.85"/>
+                  <path d="M 0,145 C 50,145 60,90 80,90" stroke="#38d672" stroke-width="2" fill="none" opacity="0.85"/>
+                  <!-- Traces from center to right -->
+                  <path d="M 80,90 C 100,90 110,35 160,35" stroke="#38d672" stroke-width="2" fill="none" opacity="0.85"/>
+                  <path d="M 80,90 L 160,90" stroke="#a86bf5" stroke-width="2" fill="none" opacity="0.85"/>
+                  <path d="M 80,90 C 100,90 110,145 160,145" stroke="#38d672" stroke-width="2" fill="none" opacity="0.85"/>
+                </svg>
+
+                <div class="network-hub">
+                  <div class="hub-pulse-ring"></div>
+                  <div class="hub-core">
+                    <span class="server-rack-icon">🖪</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Right Stack: Cloud, Database & Security -->
+              <div class="network-column">
+                <div class="net-node" id="node-cloud">
+                  <span class="node-icon">☁</span>
+                  <div class="node-text">
+                    <span class="node-name">Cloud Services</span>
+                    <span class="node-status green-status">• Operational</span>
+                  </div>
+                </div>
+                <div class="net-node" id="node-db">
+                  <span class="node-icon">🗄</span>
+                  <div class="node-text">
+                    <span class="node-name">Database</span>
+                    <span class="node-status green-status">• Connected</span>
+                  </div>
+                </div>
+                <div class="net-node" id="node-sec">
+                  <span class="node-icon">🛡</span>
+                  <div class="node-text">
+                    <span class="node-name">Security</span>
+                    <span class="node-status green-status">• Protected</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="project-copy">
+            <div class="project-copy-main">
+              <h3>Technical support</h3>
+              <p>Diagnose, resolve, and keep systems running smoothly.</p>
+              <div class="tags">
+                <span>Diagnostics</span>
+                <span>Documentation</span>
+                <span>IT Support</span>
+                <span>Reliability</span>
+              </div>
+              <details class="concept-disclosure">
+                <summary>Explore the concept <span class="summary-arrow" aria-hidden="true">↗</span></summary>
+                <div class="disclosure-body">
+                  <p>Proposed scope: root-cause diagnosis, infrastructure connectivity troubleshooting, SLA-backed issue resolution, and clear technical playbooks. Illustrated concept architecture model.</p>
+                  <a class="project-live-link" data-project-link="support" hidden>Live Project ↗</a>
+                </div>
+              </details>
+            </div>
+            <a class="card-circle-btn" href="#work" aria-label="Technical support project details">
+              <span class="circle-btn-arrow" aria-hidden="true">→</span>
+            </a>
+          </div>
+        </article>
+
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         CAPABILITIES SECTION ("THREE SKILLS. ONE WORKFLOW.")
+         ========================================================================= -->
+    <section class="capabilities-section section" id="capabilities" aria-labelledby="capabilities-title">
+      <div class="shell">
+        <div class="section-heading">
+          <div>
+            <h2 id="capabilities-title">Three skills. One workflow<span class="accent">.</span></h2>
+          </div>
+          <p class="heading-note">Different tools. A connected approach.<br>From idea to execution, I turn problems into solutions and concepts into content.</p>
+        </div>
+
+        <div class="capability-grid">
+          <!-- Capability 01: Websites & Applications -->
+          <article class="capability glass">
+            <div class="cap-number">
+              <span>01 |</span>
+              <span class="cap-arrow" aria-hidden="true">↗</span>
+            </div>
+            <div class="cap-body">
+              <div class="cap-icon-box" aria-hidden="true">
+                <svg viewBox="0 0 28 28" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="18 8 24 14 18 20"></polyline>
+                  <polyline points="10 8 4 14 10 20"></polyline>
+                  <line x1="16" y1="5" x2="12" y2="23"></line>
+                </svg>
+              </div>
+              <div class="cap-info">
+                <h3>Websites & applications</h3>
+                <p>Build modern, responsive websites and web applications with clean, functional design.</p>
+              </div>
+            </div>
+          </article>
+
+          <!-- Capability 02: Troubleshooting & IT Support -->
+          <article class="capability glass">
+            <div class="cap-number">
+              <span>02 |</span>
+              <span class="cap-arrow" aria-hidden="true">↗</span>
+            </div>
+            <div class="cap-body">
+              <div class="cap-icon-box" aria-hidden="true">
+                <svg viewBox="0 0 28 28" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="4" y="5" width="20" height="13" rx="2"></rect>
+                  <line x1="2" y1="22" x2="26" y2="22"></line>
+                </svg>
+              </div>
+              <div class="cap-info">
+                <h3>Troubleshooting & IT support</h3>
+                <p>Diagnose issues, resolve problems, and keep systems running smoothly and securely.</p>
+              </div>
+            </div>
+          </article>
+
+          <!-- Capability 03: Video Editing & Storytelling -->
+          <article class="capability glass">
+            <div class="cap-number">
+              <span>03 |</span>
+              <span class="cap-arrow" aria-hidden="true">↗</span>
+            </div>
+            <div class="cap-body">
+              <div class="cap-icon-box" aria-hidden="true">
+                <svg viewBox="0 0 28 28" width="28" height="28" fill="currentColor">
+                  <polygon points="7,4 23,14 7,24"></polygon>
+                </svg>
+              </div>
+              <div class="cap-info">
+                <h3>Video editing & storytelling</h3>
+                <p>Edit and polish video content into clear, engaging stories for any platform.</p>
+              </div>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         ABOUT SECTION
+         ========================================================================= -->
+    <section class="about-section shell section" id="about" aria-labelledby="about-title">
+      <div class="about-heading-col">
+        <p class="eyebrow"><span class="eyebrow-rule"></span> 03 / ABOUT ME</p>
+        <h2 id="about-title">One mind.<br>Many possibilities<span class="accent">.</span></h2>
+        <p class="micro about-caption">CODE / SYSTEMS / STORIES</p>
+      </div>
+
+      <div class="about-copy glass">
+        <span class="editable-label">EDITABLE PLACEHOLDERS</span>
+        <h3>I’m <span data-profile="name">Your Name</span>.</h3>
+        <p data-profile="bio">[Your biography: introduce yourself, your background, and what draws you to programming, technical support, and video editing.]</p>
+        <p data-profile="approach">[Your approach: describe how you work, the tools you actually use, and the kinds of projects or roles you would like to explore.]</p>
+        <p class="location">
+          <span aria-hidden="true">◎</span> <span data-profile="location">[Your city / time zone]</span>
+        </p>
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         CONTACT / CTA BANNER ("READY FOR WHAT'S NEXT?")
+         ========================================================================= -->
+    <section class="contact-section shell" id="contact" aria-labelledby="contact-title">
+      <div class="contact-panel glass">
+        <div class="contact-main">
+          <p class="eyebrow"><span class="eyebrow-rule"></span> LET’S CREATE TOGETHER.</p>
+          <h2 id="contact-title">Ready for what’s <span class="accent">next?</span></h2>
+          <p class="contact-sub">For project inquiries, collaborations, and employment opportunities.</p>
+          <a id="email-link" class="contact-email" href="mailto:hello@example.com">
+            <span data-profile="email">hello@example.com</span> <span aria-hidden="true">↗</span>
+          </a>
+          <p class="placeholder-note">Placeholder email — replace with your own before sharing.</p>
+        </div>
+
+        <a class="contact-arrow-btn" href="mailto:hello@example.com" id="contact-arrow" aria-label="Start an email">
+          <span aria-hidden="true">→</span>
+        </a>
+
+        <div class="contact-side-note" aria-hidden="true">
+          <span class="side-note-line"></span>
+          <p class="micro">SAME SKILLS.<br>NEW POSSIBILITIES.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- =========================================================================
+       FOOTER
+       ========================================================================= -->
+  <footer class="site-footer shell">
+    <a class="brand" href="#home" aria-label="Back to top">
+      <svg class="orbit-logo-svg" viewBox="0 0 40 40" width="30" height="30" aria-hidden="true">
+        <circle cx="20" cy="20" r="13" fill="none" stroke="currentColor" stroke-width="1.8"/>
+        <line x1="5" y1="35" x2="35" y2="5" stroke="currentColor" stroke-width="1.8"/>
+        <circle cx="32" cy="8" r="2.8" fill="var(--accent)"/>
+      </svg>
+      <span class="brand-name" data-profile="name">YOUR NAME</span>
+    </a>
+
+    <div class="footer-center-line" aria-hidden="true"></div>
+
+    <div class="footer-links">
+      <a href="mailto:hello@example.com" id="footer-email" class="footer-link">
+        <span class="email-icon" aria-hidden="true">✉</span> Email
+      </a>
+      
+      <span class="footer-social-wrapper" data-social="github">
+        <svg class="social-icon" viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true">
+          <path d="M12 2A10 10 0 0 0 2 12c0 4.42 2.87 8.17 6.84 9.5.5.08.66-.23.66-.5v-1.69c-2.77.6-3.36-1.34-3.36-1.34-.46-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.87 1.52 2.34 1.07 2.91.83.1-.65.35-1.09.63-1.34-2.22-.25-4.55-1.11-4.55-4.92 0-1.11.38-2 1.03-2.71-.1-.25-.45-1.29.1-2.64 0 0 .84-.27 2.75 1.02.79-.22 1.65-.33 2.5-.33.85 0 1.71.11 2.5.33 1.91-1.29 2.75-1.02 2.75-1.02.55 1.35.2 2.39.1 2.64.65.71 1.03 1.6 1.03 2.71 0 3.82-2.34 4.66-4.57 4.91.36.31.69.92.69 1.85V21c0 .27.16.59.67.5C19.14 20.16 22 16.42 22 12A10 10 0 0 0 12 2z"/>
+        </svg>
+        GitHub [add link]
+      </span>
+
+      <span class="footer-social-wrapper" data-social="linkedin">
+        <svg class="social-icon" viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true">
+          <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.46 8.76a1.53 1.53 0 1 0 0-3.06 1.53 1.53 0 0 0 0 3.06m1.39 9.74v-8.37H5.07v8.37z"/>
+        </svg>
+        LinkedIn [add link]
+      </span>
+
+      <span class="footer-accent-dot" aria-hidden="true"></span>
+    </div>
+
+    <a class="back-top" href="#home" aria-label="Back to top">↑</a>
+  </footer>
+
+  <noscript>
+    <p class="noscript shell">All projects are visible. Enable JavaScript for interactive category filtering, mobile menu drawer, and contrast preferences.</p>
+  </noscript>
+</body>
+</html>
