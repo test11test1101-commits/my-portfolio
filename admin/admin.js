@@ -44,12 +44,16 @@ async function checkAuth() {
 
 function showLogin() {
   loginView.hidden = false;
+  loginView.style.display = "grid";
   dashboardView.hidden = true;
+  dashboardView.style.display = "none";
 }
 
 function showDashboard() {
   loginView.hidden = true;
+  loginView.style.display = "none";
   dashboardView.hidden = false;
+  dashboardView.style.display = "block";
   loadAdminData();
 }
 
