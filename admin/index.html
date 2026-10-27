@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Portfolio CMS — Admin Dashboard</title>
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 36 36'%3E%3Ccircle cx='18' cy='18' r='12' fill='none' stroke='%230d0f17' stroke-width='2'/%3E%3Cline x1='4' y1='32' x2='32' y2='4' stroke='%230d0f17' stroke-width='2'/%3E%3Ccircle cx='30' cy='6' r='3' fill='%237928ca'/%3E%3C/svg%3E">
-  <link rel="stylesheet" href="/admin/admin.css">
+  <link rel="stylesheet" href="./admin.css">
 </head>
 <body>
 
@@ -21,24 +21,48 @@
           <line x1="5" y1="35" x2="35" y2="5" stroke="currentColor" stroke-width="2"/>
           <circle cx="32" cy="8" r="3.2" fill="#7928ca"/>
         </svg>
-        <h2>Portfolio CMS</h2>
-        <p class="auth-sub">Enter your credentials to access the admin dashboard</p>
+        <h2 id="auth-title">Portfolio CMS</h2>
+        <p class="auth-sub" id="auth-sub">Enter your credentials to access the admin dashboard</p>
       </div>
 
       <form id="login-form" class="auth-form">
-        <div class="form-group">
-          <label for="login-username">Username</label>
-          <input type="text" id="login-username" required autocomplete="username" placeholder="admin">
+        <!-- Local Mode Fields -->
+        <div id="local-auth-fields">
+          <div class="form-group">
+            <label for="login-username">Username</label>
+            <input type="text" id="login-username" autocomplete="username" placeholder="admin">
+          </div>
+
+          <div class="form-group">
+            <label for="login-password">Password</label>
+            <input type="password" id="login-password" autocomplete="current-password" placeholder="••••••••">
+          </div>
         </div>
 
-        <div class="form-group">
-          <label for="login-password">Password</label>
-          <input type="password" id="login-password" required autocomplete="current-password" placeholder="••••••••">
+        <!-- GitHub Cloud Mode Fields -->
+        <div id="github-auth-fields" hidden>
+          <div class="form-group">
+            <label for="github-token">GitHub Personal Access Token</label>
+            <div style="position:relative;">
+              <input type="password" id="github-token" placeholder="ghp_xxxxxxxxxxxx" autocomplete="current-password" style="padding-right: 36px;">
+              <button type="button" id="btn-toggle-token-vis" style="position:absolute; right:8px; top:50%; transform:translateY(-50%); background:none; border:none; cursor:pointer; color:var(--muted); font-size:14px; padding:4px;" title="Show / Hide Token">👁</button>
+            </div>
+            <p style="font-size: 11.5px; color: var(--muted); margin: 6px 0 0; line-height: 1.4;">
+              Token with <code>repo</code> scope to commit updates directly to GitHub Pages. Stored only in this browser.
+              <a href="https://github.com/settings/tokens/new?scopes=repo&description=Portfolio+Live+CMS" target="_blank" rel="noopener noreferrer" style="color:var(--accent); font-weight:600; display:inline-block; margin-top:4px;">Generate Token on GitHub ↗</a>
+            </p>
+          </div>
         </div>
 
         <div id="login-error" class="error-msg" hidden></div>
 
-        <button type="submit" class="btn btn-primary btn-block">Sign In →</button>
+        <button type="submit" id="btn-login-submit" class="btn btn-primary btn-block">Sign In →</button>
+
+        <div style="text-align: center; margin-top: 14px;">
+          <button type="button" id="btn-toggle-mode" style="background:none; border:none; color:var(--accent); font-size:12px; font-weight:600; cursor:pointer; text-decoration:underline;">
+            Switch to GitHub Cloud Access Mode
+          </button>
+        </div>
       </form>
     </div>
   </div>
@@ -55,10 +79,11 @@
           <circle cx="32" cy="8" r="2.8" fill="#7928ca"/>
         </svg>
         <span class="dash-title">PORTFOLIO CMS</span>
-        <a href="/" target="_blank" class="preview-site-link">View Public Site ↗</a>
+        <a href="../" target="_blank" class="preview-site-link">View Public Site ↗</a>
       </div>
 
       <div class="dash-user-controls">
+        <span id="mode-badge" class="badge" style="margin-right: 8px; background: #dcfce7; color: #15803d; font-weight: 700;">● Local Mode</span>
         <span class="user-greeting">Logged in as <strong id="current-username">admin</strong></span>
         <button id="btn-open-pwd" class="btn btn-sm btn-outline">Change Password</button>
         <button id="btn-logout" class="btn btn-sm btn-danger">Log Out</button>
@@ -361,6 +386,6 @@
     </div>
   </div>
 
-  <script src="/admin/admin.js"></script>
+  <script src="./admin.js"></script>
 </body>
 </html>

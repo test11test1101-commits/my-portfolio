@@ -1,7 +1,14 @@
 /* ==========================================================================
    PORTFOLIO CMS ADMIN JAVASCRIPT
-   Authentication, Project CRUD, Media Uploads, and Backup/Restore
+   Dual-Mode Support:
+   1. Local Native Daemon (Python 3 + SQLite WAL)
+   2. GitHub Pages Cloud Mode (Direct GitHub REST API & Commit Pipeline)
    ========================================================================== */
+
+// Configuration for GitHub Pages Mode
+const GITHUB_REPO = "test11test1101-commits/my-portfolio";
+const GITHUB_BRANCH = "main";
+const GITHUB_CONTENT_PATH = "content.json";
 
 // State
 let appData = {
@@ -10,6 +17,9 @@ let appData = {
   projects: []
 };
 
+let isGitHubMode = window.location.hostname.includes("github.io") || !!localStorage.getItem("portfolio_gh_token");
+let currentContentSha = null;
+
 // UI Elements
 const loginView = document.getElementById("login-view");
 const dashboardView = document.getElementById("dashboard-view");
@@ -17,27 +27,206 @@ const loginForm = document.getElementById("login-form");
 const loginError = document.getElementById("login-error");
 const toastEl = document.getElementById("toast");
 
+const authTitle = document.getElementById("auth-title");
+const authSub = document.getElementById("auth-sub");
+const localAuthFields = document.getElementById("local-auth-fields");
+const githubAuthFields = document.getElementById("github-auth-fields");
+const githubTokenInput = document.getElementById("github-token");
+const btnToggleMode = document.getElementById("btn-toggle-mode");
+const btnToggleTokenVis = document.getElementById("btn-toggle-token-vis");
+const modeBadge = document.getElementById("mode-badge");
+
 // Toast Notification
 function showToast(message, isError = false) {
   toastEl.textContent = message;
   toastEl.className = `toast show ${isError ? 'error' : ''}`;
   setTimeout(() => {
     toastEl.className = "toast";
-  }, 3500);
+  }, 4000);
 }
+
+// -----------------------------------------------------------------------------
+// GITHUB API HELPERS
+// -----------------------------------------------------------------------------
+
+function getGhToken() {
+  return localStorage.getItem("portfolio_gh_token") || "";
+}
+
+function getGhHeaders() {
+  const token = getGhToken();
+  return {
+    "Authorization": `Bearer ${token}`,
+    "Accept": "application/vnd.github.v3+json",
+    "Content-Type": "application/json"
+  };
+}
+
+// UTF-8 safe Base64 encoder/decoder
+function utf8ToBase64(str) {
+  return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, (match, p1) => {
+    return String.fromCharCode('0x' + p1);
+  }));
+}
+
+function base64ToUtf8(str) {
+  return decodeURIComponent(Array.prototype.map.call(atob(str), (c) => {
+    return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+  }).join(''));
+}
+
+async function fetchFromGitHub(path) {
+  const res = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/${path}?ref=${GITHUB_BRANCH}&_t=${Date.now()}`, {
+    headers: getGhHeaders()
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.message || `GitHub API error: ${res.statusText}`);
+  }
+  return await res.json();
+}
+
+async function commitToGitHub(path, contentStr, message, existingSha = null) {
+  let sha = existingSha;
+  if (!sha) {
+    try {
+      const existing = await fetchFromGitHub(path);
+      sha = existing.sha;
+    } catch (_) {
+      sha = null;
+    }
+  }
+
+  const payload = {
+    message: message,
+    content: utf8ToBase64(contentStr),
+    branch: GITHUB_BRANCH
+  };
+  if (sha) payload.sha = sha;
+
+  const res = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/${path}`, {
+    method: "PUT",
+    headers: getGhHeaders(),
+    body: JSON.stringify(payload)
+  });
+
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.message || `Failed to commit to GitHub (${res.status})`);
+  }
+
+  const data = await res.json();
+  return data.content ? data.content.sha : null;
+}
+
+async function uploadImageToGitHub(file) {
+  const ext = file.name.split('.').pop().toLowerCase() || "jpg";
+  const uniqueName = Date.now() + "-" + Math.random().toString(36).substring(2, 8) + "." + ext;
+  const targetPath = `assets/uploads/images/${uniqueName}`;
+
+  const base64Data = await new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      const result = reader.result;
+      const base64 = result.split(',')[1];
+      resolve(base64);
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+
+  const payload = {
+    message: `Upload project asset ${uniqueName} via CMS`,
+    content: base64Data,
+    branch: GITHUB_BRANCH
+  };
+
+  const res = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/${targetPath}`, {
+    method: "PUT",
+    headers: getGhHeaders(),
+    body: JSON.stringify(payload)
+  });
+
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.message || "Failed to upload image to GitHub repository");
+  }
+
+  return targetPath;
+}
+
+// -----------------------------------------------------------------------------
+// AUTHENTICATION & MODE SWITCHING
+// -----------------------------------------------------------------------------
+
+function setAuthModeUI(toGitHubMode) {
+  isGitHubMode = toGitHubMode;
+  if (isGitHubMode) {
+    localAuthFields.hidden = true;
+    githubAuthFields.hidden = false;
+    authTitle.textContent = "Portfolio Cloud CMS";
+    authSub.textContent = "Enter your GitHub Access Token to edit and publish live anytime";
+    btnToggleMode.textContent = "Switch to Local Server Mode";
+    document.getElementById("btn-login-submit").textContent = "Connect to GitHub →";
+  } else {
+    localAuthFields.hidden = false;
+    githubAuthFields.hidden = true;
+    authTitle.textContent = "Portfolio CMS";
+    authSub.textContent = "Enter your credentials to access the admin dashboard";
+    btnToggleMode.textContent = "Switch to GitHub Cloud Access Mode";
+    document.getElementById("btn-login-submit").textContent = "Sign In →";
+  }
+}
+
+btnToggleMode.addEventListener("click", () => {
+  setAuthModeUI(!isGitHubMode);
+});
+
+btnToggleTokenVis.addEventListener("click", () => {
+  const isPwd = githubTokenInput.type === "password";
+  githubTokenInput.type = isPwd ? "text" : "password";
+  btnToggleTokenVis.textContent = isPwd ? "🙈" : "👁";
+});
 
 // Check session on startup
 async function checkAuth() {
+  const token = getGhToken();
+
+  // If on GitHub Pages or token already saved
+  if (window.location.hostname.includes("github.io") || token) {
+    setAuthModeUI(true);
+    if (token) {
+      try {
+        const res = await fetch("https://api.github.com/user", { headers: getGhHeaders() });
+        if (res.ok) {
+          const user = await res.json();
+          document.getElementById("current-username").textContent = user.login || "GitHub User";
+          showDashboard();
+          return;
+        } else {
+          localStorage.removeItem("portfolio_gh_token");
+        }
+      } catch (_) {}
+    }
+    showLogin();
+    return;
+  }
+
+  // Local server check
   try {
     const res = await fetch("/api/admin/check");
     if (res.ok) {
       const data = await res.json();
       document.getElementById("current-username").textContent = data.username || "admin";
+      setAuthModeUI(false);
       showDashboard();
     } else {
+      setAuthModeUI(false);
       showLogin();
     }
   } catch (e) {
+    // Local server not responding, switch to GitHub Cloud mode
+    setAuthModeUI(true);
     showLogin();
   }
 }
@@ -54,16 +243,60 @@ function showDashboard() {
   loginView.style.display = "none";
   dashboardView.hidden = false;
   dashboardView.style.display = "block";
+
+  if (modeBadge) {
+    if (isGitHubMode) {
+      modeBadge.textContent = "● GitHub Cloud Mode";
+      modeBadge.style.background = "#e0e7ff";
+      modeBadge.style.color = "#4338ca";
+      document.getElementById("btn-open-pwd").textContent = "Update Token";
+    } else {
+      modeBadge.textContent = "● Local Mode";
+      modeBadge.style.background = "#dcfce7";
+      modeBadge.style.color = "#15803d";
+      document.getElementById("btn-open-pwd").textContent = "Change Password";
+    }
+  }
+
   loadAdminData();
 }
-
-// -----------------------------------------------------------------------------
-// AUTHENTICATION HANDLERS
-// -----------------------------------------------------------------------------
 
 loginForm.addEventListener("submit", async (e) => {
   e.preventDefault();
   loginError.hidden = true;
+
+  if (isGitHubMode) {
+    // GitHub Cloud Mode Login
+    const token = githubTokenInput.value.trim();
+    if (!token) {
+      loginError.textContent = "Please enter your GitHub Personal Access Token.";
+      loginError.hidden = false;
+      return;
+    }
+
+    try {
+      showToast("Verifying GitHub Token...");
+      const res = await fetch("https://api.github.com/user", {
+        headers: { "Authorization": `Bearer ${token}` }
+      });
+      if (res.ok) {
+        const user = await res.json();
+        localStorage.setItem("portfolio_gh_token", token);
+        document.getElementById("current-username").textContent = user.login;
+        showDashboard();
+        showToast("Connected to GitHub as " + user.login);
+      } else {
+        loginError.textContent = "Invalid GitHub Token. Please ensure it has 'repo' scope.";
+        loginError.hidden = false;
+      }
+    } catch (err) {
+      loginError.textContent = "Network error connecting to GitHub API.";
+      loginError.hidden = false;
+    }
+    return;
+  }
+
+  // Local Server Mode Login
   const username = document.getElementById("login-username").value.trim();
   const password = document.getElementById("login-password").value;
 
@@ -84,20 +317,35 @@ loginForm.addEventListener("submit", async (e) => {
       loginError.hidden = false;
     }
   } catch (err) {
-    loginError.textContent = "Unable to connect to server";
+    loginError.textContent = "Unable to connect to local server";
     loginError.hidden = false;
   }
 });
 
 document.getElementById("btn-logout").addEventListener("click", async () => {
+  if (isGitHubMode) {
+    localStorage.removeItem("portfolio_gh_token");
+    showToast("Disconnected from GitHub");
+    showLogin();
+    return;
+  }
   await fetch("/api/logout", { method: "POST" });
   showToast("Logged out successfully");
   showLogin();
 });
 
-// Password change modal
+// Password or Token Modal
 const pwdModal = document.getElementById("password-modal");
 document.getElementById("btn-open-pwd").addEventListener("click", () => {
+  if (isGitHubMode) {
+    const current = getGhToken();
+    const updated = prompt("Enter new GitHub Personal Access Token:", current);
+    if (updated !== null && updated.trim()) {
+      localStorage.setItem("portfolio_gh_token", updated.trim());
+      showToast("GitHub Token updated!");
+    }
+    return;
+  }
   document.getElementById("password-form").reset();
   pwdModal.hidden = false;
 });
@@ -149,10 +397,29 @@ tabButtons.forEach(btn => {
 });
 
 // -----------------------------------------------------------------------------
-// LOAD ALL DATA FROM BACKEND
+// LOAD DATA
 // -----------------------------------------------------------------------------
 
 async function loadAdminData() {
+  if (isGitHubMode) {
+    try {
+      showToast("Fetching live data from GitHub...");
+      const fileData = await fetchFromGitHub(GITHUB_CONTENT_PATH);
+      currentContentSha = fileData.sha;
+      const rawText = base64ToUtf8(fileData.content);
+      appData = JSON.parse(rawText);
+
+      renderProjectsList();
+      populateProfileForm();
+      renderCapabilitiesForm();
+      showToast("Data loaded from GitHub!");
+    } catch (e) {
+      showToast("Failed to fetch from GitHub: " + e.message, true);
+    }
+    return;
+  }
+
+  // Local Mode
   try {
     const res = await fetch("/api/admin/data");
     if (!res.ok) {
@@ -240,7 +507,19 @@ window.moveProject = async function(index, direction) {
   projects[index] = projects[targetIndex];
   projects[targetIndex] = temp;
 
+  projects.forEach((p, i) => p.order_index = i + 1);
   renderProjectsList();
+
+  if (isGitHubMode) {
+    showToast("Committing new order to GitHub...");
+    try {
+      currentContentSha = await commitToGitHub(GITHUB_CONTENT_PATH, JSON.stringify(appData, null, 2), "Reorder projects via Cloud CMS", currentContentSha);
+      showToast("Order committed to GitHub!");
+    } catch (e) {
+      showToast("Failed to commit order: " + e.message, true);
+    }
+    return;
+  }
 
   const orderIds = projects.map(p => p.id);
   try {
@@ -249,44 +528,61 @@ window.moveProject = async function(index, direction) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ order: orderIds })
     });
-    if (!res.ok) throw new Error();
-    showToast("Project order updated");
+    if (res.ok) {
+      showToast("Order saved");
+    }
   } catch (e) {
-    showToast("Failed to save project order", true);
-    loadAdminData();
+    showToast("Error saving order", true);
   }
 };
 
 // Modal Openers
-document.getElementById("btn-new-project").addEventListener("click", () => {
+const modalTitle = document.getElementById("modal-title");
+const projIdInput = document.getElementById("proj-id");
+const projThumbInput = document.getElementById("proj-thumb");
+const thumbFileInput = document.getElementById("thumb-file-input");
+const thumbPreviewBox = document.getElementById("thumb-preview-box");
+const thumbPreviewImg = document.getElementById("thumb-preview-img");
+
+function clearThumbPreview() {
+  projThumbInput.value = "";
+  thumbPreviewImg.src = "";
+  thumbPreviewBox.hidden = true;
+}
+
+function setThumbPreview(url) {
+  projThumbInput.value = url;
+  thumbPreviewImg.src = url;
+  thumbPreviewBox.hidden = false;
+}
+
+document.getElementById("btn-open-project-modal").addEventListener("click", () => {
+  modalTitle.textContent = "New Project";
   projectForm.reset();
-  document.getElementById("proj-id").value = "";
-  document.getElementById("modal-title").textContent = "New Project";
-  document.getElementById("proj-concept").checked = true;
-  document.getElementById("proj-published").checked = true;
+  projIdInput.value = "";
   clearThumbPreview();
   projectModal.hidden = false;
 });
 
-document.getElementById("btn-close-modal").addEventListener("click", () => projectModal.hidden = true);
-document.getElementById("btn-cancel-modal").addEventListener("click", () => projectModal.hidden = true);
+document.getElementById("btn-close-project-modal").addEventListener("click", () => projectModal.hidden = true);
+document.getElementById("btn-cancel-project").addEventListener("click", () => projectModal.hidden = true);
 
 window.openEditProject = function(id) {
   const p = appData.projects.find(item => item.id === id);
   if (!p) return;
 
-  document.getElementById("proj-id").value = p.id;
-  document.getElementById("modal-title").textContent = `Edit Project — ${p.title}`;
-  document.getElementById("proj-title").value = p.title;
-  document.getElementById("proj-category").value = p.category;
-  document.getElementById("proj-desc").value = p.description;
+  modalTitle.textContent = "Edit Project";
+  projIdInput.value = p.id;
+  document.getElementById("proj-title").value = p.title || "";
+  document.getElementById("proj-category").value = p.category || "development";
+  document.getElementById("proj-desc").value = p.description || "";
   document.getElementById("proj-scope").value = p.detailed_scope || "";
   document.getElementById("proj-video-url").value = p.video_url || "";
   document.getElementById("proj-demo-url").value = p.demo_url || "";
   document.getElementById("proj-github-url").value = p.github_url || "";
   document.getElementById("proj-tags").value = (p.tags || []).join(", ");
   document.getElementById("proj-concept").checked = Boolean(p.is_concept);
-  document.getElementById("proj-published").checked = Boolean(p.is_published);
+  document.getElementById("proj-published").checked = p.is_published !== false && p.is_published !== 0;
 
   if (p.thumbnail) {
     setThumbPreview(p.thumbnail);
@@ -297,32 +593,23 @@ window.openEditProject = function(id) {
   projectModal.hidden = false;
 };
 
-// Thumbnail & Media Upload Handling
-const thumbFileInput = document.getElementById("thumb-file-input");
-const thumbPreviewBox = document.getElementById("thumb-preview-box");
-const thumbPreviewImg = document.getElementById("thumb-preview-img");
-const thumbUploadPrompt = document.getElementById("thumb-upload-prompt");
-const projThumbInput = document.getElementById("proj-thumbnail");
-
-function setThumbPreview(url) {
-  projThumbInput.value = url;
-  thumbPreviewImg.src = url;
-  thumbPreviewBox.hidden = false;
-  thumbUploadPrompt.hidden = true;
-}
-
-function clearThumbPreview() {
-  projThumbInput.value = "";
-  thumbPreviewImg.src = "";
-  thumbPreviewBox.hidden = true;
-  thumbUploadPrompt.hidden = false;
-}
-
 document.getElementById("btn-remove-thumb").addEventListener("click", clearThumbPreview);
 
 thumbFileInput.addEventListener("change", async (e) => {
   const file = e.target.files[0];
   if (!file) return;
+
+  if (isGitHubMode) {
+    showToast("Uploading and committing image to GitHub...");
+    try {
+      const ghUrl = await uploadImageToGitHub(file);
+      setThumbPreview(ghUrl);
+      showToast("Image committed to repository!");
+    } catch (e) {
+      showToast("Image upload failed: " + e.message, true);
+    }
+    return;
+  }
 
   const formData = new FormData();
   formData.append("file", file);
@@ -345,43 +632,18 @@ thumbFileInput.addEventListener("change", async (e) => {
   }
 });
 
-// Video File Upload Handling
-const videoFileInput = document.getElementById("video-file-input");
-videoFileInput.addEventListener("change", async (e) => {
-  const file = e.target.files[0];
-  if (!file) return;
-
-  const formData = new FormData();
-  formData.append("file", file);
-
-  showToast("Uploading video (this may take a few seconds)...");
-  try {
-    const res = await fetch("/api/admin/upload", {
-      method: "POST",
-      body: formData
-    });
-    const data = await res.json();
-    if (res.ok && data.success) {
-      document.getElementById("proj-video-url").value = data.url;
-      showToast("Video uploaded and linked!");
-    } else {
-      showToast(data.error || "Video upload failed", true);
-    }
-  } catch (err) {
-    showToast("Error uploading video", true);
-  }
-});
-
-// Save Project (Create / Edit)
+// Save / Submit Project
 projectForm.addEventListener("submit", async (e) => {
   e.preventDefault();
-  const id = document.getElementById("proj-id").value;
+  const idStr = projIdInput.value;
+  const id = idStr ? parseInt(idStr, 10) : null;
+
   const tags = document.getElementById("proj-tags").value
     .split(",")
     .map(t => t.trim())
     .filter(Boolean);
 
-  const payload = {
+  const projectData = {
     title: document.getElementById("proj-title").value.trim(),
     category: document.getElementById("proj-category").value,
     description: document.getElementById("proj-desc").value.trim(),
@@ -391,10 +653,38 @@ projectForm.addEventListener("submit", async (e) => {
     demo_url: document.getElementById("proj-demo-url").value.trim(),
     github_url: document.getElementById("proj-github-url").value.trim(),
     tags: tags,
-    is_concept: document.getElementById("proj-concept").checked,
-    is_published: document.getElementById("proj-published").checked
+    is_concept: document.getElementById("proj-concept").checked ? 1 : 0,
+    is_published: document.getElementById("proj-published").checked ? 1 : 0
   };
 
+  if (isGitHubMode) {
+    if (!appData.projects) appData.projects = [];
+    if (id) {
+      const idx = appData.projects.findIndex(p => p.id === id);
+      if (idx !== -1) {
+        appData.projects[idx] = { ...appData.projects[idx], ...projectData };
+      }
+    } else {
+      const nextId = appData.projects.reduce((max, p) => Math.max(max, p.id || 0), 0) + 1;
+      projectData.id = nextId;
+      projectData.order_index = appData.projects.length + 1;
+      projectData.gallery = [];
+      appData.projects.push(projectData);
+    }
+
+    showToast("Committing project to GitHub...");
+    try {
+      currentContentSha = await commitToGitHub(GITHUB_CONTENT_PATH, JSON.stringify(appData, null, 2), `${id ? 'Update' : 'Create'} project "${projectData.title}" via Cloud CMS`, currentContentSha);
+      projectModal.hidden = true;
+      renderProjectsList();
+      showToast("Project saved & committed to GitHub!");
+    } catch (e) {
+      showToast("Failed to save: " + e.message, true);
+    }
+    return;
+  }
+
+  // Local Mode
   const isEdit = Boolean(id);
   const url = isEdit ? `/api/admin/projects/${id}` : "/api/admin/projects";
   const method = isEdit ? "PUT" : "POST";
@@ -403,7 +693,7 @@ projectForm.addEventListener("submit", async (e) => {
     const res = await fetch(url, {
       method: method,
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload)
+      body: JSON.stringify(projectData)
     });
     const data = await res.json();
     if (res.ok && data.success) {
@@ -423,6 +713,19 @@ window.deleteProject = async function(id) {
   const p = appData.projects.find(item => item.id === id);
   const name = p ? `"${p.title}"` : "this project";
   if (!confirm(`Are you sure you want to delete ${name}? This action cannot be undone.`)) {
+    return;
+  }
+
+  if (isGitHubMode) {
+    appData.projects = appData.projects.filter(item => item.id !== id);
+    showToast("Committing deletion to GitHub...");
+    try {
+      currentContentSha = await commitToGitHub(GITHUB_CONTENT_PATH, JSON.stringify(appData, null, 2), `Delete project ${name} via Cloud CMS`, currentContentSha);
+      renderProjectsList();
+      showToast("Project deleted & committed to GitHub!");
+    } catch (e) {
+      showToast("Failed to delete: " + e.message, true);
+    }
     return;
   }
 
@@ -469,6 +772,18 @@ document.getElementById("btn-save-profile").addEventListener("click", async () =
     github: document.getElementById("prof-github").value,
     linkedin: document.getElementById("prof-linkedin").value
   };
+
+  if (isGitHubMode) {
+    appData.profile = payload;
+    showToast("Committing profile update to GitHub...");
+    try {
+      currentContentSha = await commitToGitHub(GITHUB_CONTENT_PATH, JSON.stringify(appData, null, 2), "Update profile via Cloud CMS", currentContentSha);
+      showToast("Profile saved & committed to GitHub! Live site updates in ~30s.");
+    } catch (e) {
+      showToast("Failed to save: " + e.message, true);
+    }
+    return;
+  }
 
   try {
     const res = await fetch("/api/admin/profile", {
@@ -526,6 +841,18 @@ document.getElementById("btn-save-capabilities").addEventListener("click", async
     icon_type: card.querySelector(".cap-icon-select").value
   }));
 
+  if (isGitHubMode) {
+    appData.capabilities = caps;
+    showToast("Committing capabilities to GitHub...");
+    try {
+      currentContentSha = await commitToGitHub(GITHUB_CONTENT_PATH, JSON.stringify(appData, null, 2), "Update capabilities via Cloud CMS", currentContentSha);
+      showToast("Capabilities saved & committed to GitHub! Live site updates in ~30s.");
+    } catch (e) {
+      showToast("Failed to save: " + e.message, true);
+    }
+    return;
+  }
+
   try {
     const res = await fetch("/api/admin/capabilities", {
       method: "PUT",
@@ -550,12 +877,47 @@ document.getElementById("btn-save-capabilities").addEventListener("click", async
 const restoreForm = document.getElementById("restore-form");
 const restoreFileInput = document.getElementById("restore-file-input");
 
+// In GitHub mode, handle backup download as JSON
+document.querySelector(".backup-card .btn-primary").addEventListener("click", (e) => {
+  if (isGitHubMode) {
+    e.preventDefault();
+    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(appData, null, 2));
+    const dlAnchor = document.createElement("a");
+    dlAnchor.setAttribute("href", dataStr);
+    dlAnchor.setAttribute("download", `portfolio-backup-${new Date().toISOString().slice(0, 10)}.json`);
+    document.body.appendChild(dlAnchor);
+    dlAnchor.click();
+    dlAnchor.remove();
+    showToast("Downloaded portfolio backup JSON!");
+  }
+});
+
 restoreForm.addEventListener("submit", async (e) => {
   e.preventDefault();
   const file = restoreFileInput.files[0];
   if (!file) return;
 
-  if (!confirm("WARNING: Restoring will overwrite the current database and media uploads with the contents of this backup. Are you sure you wish to proceed?")) {
+  if (!confirm("WARNING: Restoring will overwrite the current content with the backup file. Proceed?")) {
+    return;
+  }
+
+  if (isGitHubMode) {
+    try {
+      const text = await file.text();
+      const parsed = JSON.parse(text);
+      if (!parsed.profile && !parsed.projects) {
+        throw new Error("Invalid portfolio JSON backup format");
+      }
+      appData = parsed;
+      showToast("Committing restored data to GitHub...");
+      currentContentSha = await commitToGitHub(GITHUB_CONTENT_PATH, JSON.stringify(appData, null, 2), "Restore portfolio backup via Cloud CMS", currentContentSha);
+      renderProjectsList();
+      populateProfileForm();
+      renderCapabilitiesForm();
+      showToast("Backup restored & committed to GitHub!");
+    } catch (e) {
+      showToast("Restore failed: " + e.message, true);
+    }
     return;
   }
 
