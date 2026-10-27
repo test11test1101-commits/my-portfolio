@@ -999,8 +999,15 @@ class CMSHandler(BaseHTTPRequestHandler):
         # 2. Map routes to filesystem
         if path == "/" or path == "":
             disk_path = os.path.join(BASE_DIR, "index.html")
-        elif path == "/admin" or path == "/admin/":
+        elif path == "/admin":
+            self.send_response(301)
+            self.send_header("Location", "/admin/")
+            self.end_headers()
+            return
+        elif path == "/admin/":
             disk_path = os.path.join(ADMIN_DIR, "index.html")
+        elif path in ["/admin.css", "/admin.js"]:
+            disk_path = os.path.join(ADMIN_DIR, path.lstrip("/"))
         elif path.startswith("/admin/"):
             rel_path = path[len("/admin/"):]
             disk_path = os.path.join(ADMIN_DIR, rel_path)
