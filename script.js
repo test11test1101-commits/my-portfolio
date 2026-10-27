@@ -181,37 +181,35 @@ if (menuButton && navigation) {
 }
 
 /* --------------------------------------------------------------------------
-   4. Category Filters Controller
+   4. Category Filters Controller & Project Visuals Cache
    -------------------------------------------------------------------------- */
 let activeFilter = "all";
 const projectGrid = document.getElementById("project-grid");
 const filterStatus = document.getElementById("filter-status");
+
+// Capture handcrafted initial visuals from static DOM (Nova 3D workspace, Video Timeline, Network Topology)
+const initialProjectVisuals = {};
+document.querySelectorAll(".project-card").forEach((card, idx) => {
+  const visualEl = card.querySelector(".project-visual");
+  if (visualEl) {
+    initialProjectVisuals[idx] = visualEl.outerHTML;
+  }
+});
 
 function bindFilterTabs() {
   const filterTabs = document.querySelectorAll(".filter-tab");
   const projectCards = document.querySelectorAll(".project-card");
 
   filterTabs.forEach(tab => {
-    // Avoid double attaching
     tab.onclick = () => {
-      const category = tab.dataset.filter;
+      const category = tab.dataset.filter || "all";
+      activeFilter = category;
 
-      if (activeFilter === category) {
-        // Toggle back to showing all work
-        activeFilter = "all";
-        filterTabs.forEach(t => {
-          const isDev = t.dataset.filter === "development";
-          t.classList.toggle("active", isDev);
-          t.setAttribute("aria-selected", String(isDev));
-        });
-      } else {
-        activeFilter = category;
-        filterTabs.forEach(t => {
-          const isMatch = t === tab;
-          t.classList.toggle("active", isMatch);
-          t.setAttribute("aria-selected", String(isMatch));
-        });
-      }
+      filterTabs.forEach(t => {
+        const isMatch = (t.dataset.filter || "all") === activeFilter;
+        t.classList.toggle("active", isMatch);
+        t.setAttribute("aria-selected", String(isMatch));
+      });
 
       let visibleCount = 0;
       projectCards.forEach(card => {
@@ -226,10 +224,22 @@ function bindFilterTabs() {
 
       if (filterStatus) {
         const categoryName = activeFilter === "all" ? "all specialties" : tab.textContent.replace(/\d+\s*\/\s*/g, "").trim().toLowerCase();
-        filterStatus.textContent = `Showing ${visibleCount} concept project${visibleCount === 1 ? "" : "s"}: ${categoryName}.`;
+        filterStatus.textContent = `Showing ${visibleCount} project${visibleCount === 1 ? "" : "s"}: ${categoryName}.`;
       }
     };
   });
+
+  // Re-apply current active filter to cards
+  let visibleCount = 0;
+  projectCards.forEach(card => {
+    const matches = activeFilter === "all" || card.dataset.category === activeFilter;
+    card.hidden = !matches;
+    if (matches) visibleCount++;
+  });
+
+  if (projectGrid) {
+    projectGrid.classList.toggle("is-filtered", activeFilter !== "all");
+  }
 }
 
 bindFilterTabs();
@@ -240,14 +250,18 @@ bindFilterTabs();
 async function loadDynamicContent() {
   try {
     let res = null;
+    // 1. First attempt: cache-busted content.json (immediate on GitHub Pages & static hosts)
     try {
-      res = await fetch("/api/content");
+      res = await fetch(`./content.json?_t=${Date.now()}`);
     } catch (_) {}
+
+    // 2. Second attempt: local Python API endpoint if running server.py
     if (!res || !res.ok) {
       try {
-        res = await fetch(`content.json?_t=${Date.now()}`);
+        res = await fetch("/api/content");
       } catch (_) {}
     }
+
     if (!res || !res.ok) return;
     const data = await res.json();
     if (!data.success) return;
@@ -277,8 +291,7 @@ async function loadDynamicContent() {
       renderProjects(data.projects);
     }
   } catch (err) {
-    // Keep existing static markup on network failure
-    console.log("Using static portfolio data");
+    console.log("Using static portfolio data:", err);
   }
 }
 
@@ -295,42 +308,52 @@ function escapeHtml(str) {
 function renderProjects(projects) {
   if (!projectGrid) return;
 
-  // Check if projects are strictly the original 3 untouched default projects
-  // If so, preserve the full handcrafted Nova 3D platform, video timeline, and network SVG visuals.
-  const isDefaultSeed = projects.length === 3 &&
-    projects[0].category === "development" && !projects[0].thumbnail &&
-    projects[1].category === "video" && projects[1].thumbnail === "assets/mountain-preview.jpg" &&
-    projects[2].category === "support" && !projects[2].thumbnail;
+  // Filter only published projects (is_published !== 0 and !== false)
+  const publishedProjects = projects.filter(p => p.is_published !== 0 && p.is_published !== false);
+  if (publishedProjects.length === 0) return;
 
-  if (isDefaultSeed) {
-    // Re-bind filters to ensure count and links are synced
-    bindFilterTabs();
-    return;
-  }
+  // Adjust grid layout when more than 3 projects exist
+  projectGrid.classList.toggle("has-more-projects", publishedProjects.length > 3);
 
-  // Render dynamic cards with uploaded thumbnails / videos
-  projectGrid.innerHTML = projects.map((p, idx) => {
+  projectGrid.innerHTML = publishedProjects.map((p, idx) => {
     const num = String(idx + 1).padStart(2, "0");
-    const isDev = p.category === "development" && idx === 0;
+    const isDev = p.category === "development" && idx === 0 && publishedProjects.length <= 3;
 
-    // Media visual
+    // Visual Media Element
     let mediaHtml = "";
-    if (p.video_url && (p.video_url.endsWith(".mp4") || p.video_url.endsWith(".webm"))) {
+    if (p.video_url && (p.video_url.endsWith(".mp4") || p.video_url.endsWith(".webm") || p.video_url.endsWith(".mov"))) {
       mediaHtml = `
-        <div class="project-visual video-visual" style="height: 220px;">
+        <div class="project-visual video-visual" style="height: 220px; padding:0; overflow:hidden; border-radius:10px;">
           <video src="${escapeHtml(p.video_url)}" controls style="width:100%; height:100%; object-fit:cover;"></video>
         </div>
       `;
+    } else if (p.thumbnail && p.thumbnail !== "assets/mountain-preview.jpg") {
+      mediaHtml = `
+        <div class="project-visual video-visual" style="padding:0; overflow:hidden; border-radius:10px;">
+          <div class="video-preview-frame full-radius" style="position:relative; width:100%; height:240px;">
+            <img src="${escapeHtml(p.thumbnail)}" alt="${escapeHtml(p.title)}" style="width:100%; height:100%; object-fit:cover;" loading="lazy">
+            ${p.category === 'video' ? `
+              <div class="video-play-disc" aria-label="Play preview">
+                <span class="play-triangle">▶</span>
+              </div>
+            ` : ''}
+          </div>
+        </div>
+      `;
+    } else if (initialProjectVisuals[idx]) {
+      // Preserve handcrafted 3D platform / timeline / network diagram
+      mediaHtml = initialProjectVisuals[idx];
     } else if (p.thumbnail) {
       mediaHtml = `
-        <div class="project-visual" style="height: 240px; overflow:hidden;">
-          <img src="${escapeHtml(p.thumbnail)}" alt="${escapeHtml(p.title)}" style="width:100%; height:100%; object-fit:cover;" loading="lazy">
+        <div class="project-visual video-visual" style="padding:0; overflow:hidden; border-radius:10px;">
+          <div class="video-preview-frame full-radius" style="position:relative; width:100%; height:240px;">
+            <img src="${escapeHtml(p.thumbnail)}" alt="${escapeHtml(p.title)}" style="width:100%; height:100%; object-fit:cover;" loading="lazy">
+          </div>
         </div>
       `;
     } else {
-      // Elegant futuristic placeholder badge
       mediaHtml = `
-        <div class="project-visual" style="height: 200px; display:grid; place-items:center; background: linear-gradient(135deg, #e9edf6, #dce2ef); color: var(--accent); font-size: 38px;">
+        <div class="project-visual" style="height: 200px; display:grid; place-items:center; background: linear-gradient(135deg, #e9edf6, #dce2ef); color: var(--accent); font-size: 38px; border-radius: 10px;">
           <span>${p.category === 'video' ? '🎬' : (p.category === 'support' ? '🛠️' : '💻')}</span>
         </div>
       `;
@@ -341,6 +364,7 @@ function renderProjects(projects) {
     const linksHtml = `
       ${p.demo_url ? `<a href="${escapeHtml(p.demo_url)}" target="_blank" rel="noopener noreferrer" class="project-live-link">Live Demo ↗</a>` : ''}
       ${p.github_url ? `<a href="${escapeHtml(p.github_url)}" target="_blank" rel="noopener noreferrer" class="project-live-link" style="margin-left: 12px;">GitHub ↗</a>` : ''}
+      ${p.video_url && !p.video_url.endsWith(".mp4") && !p.video_url.endsWith(".webm") ? `<a href="${escapeHtml(p.video_url)}" target="_blank" rel="noopener noreferrer" class="project-live-link">Watch Video ↗</a>` : ''}
     `;
 
     return `
@@ -365,7 +389,7 @@ function renderProjects(projects) {
                   ${linksHtml}
                 </div>
               </details>
-            ` : (p.demo_url || p.github_url ? `<div style="padding-top:8px;">${linksHtml}</div>` : '')}
+            ` : (linksHtml.trim() ? `<div style="padding-top:8px;">${linksHtml}</div>` : '')}
           </div>
           <a class="card-circle-btn" href="#work" aria-label="${escapeHtml(p.title)} details">
             <span class="circle-btn-arrow" aria-hidden="true">→</span>

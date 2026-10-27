@@ -1526,13 +1526,20 @@ h2 {
   transform: scale(1.08);
 }
 
-/* Filter State Layout Adjustments */
-.project-grid.is-filtered {
+/* Filter State & Multi-project Layout Adjustments */
+.project-grid.is-filtered,
+.project-grid.has-more-projects {
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
-.project-grid.is-filtered .development-card {
+.project-grid.is-filtered .development-card,
+.project-grid.has-more-projects .development-card {
   grid-row: auto;
+}
+
+.video-preview-frame.full-radius,
+.video-preview-frame:last-child {
+  border-radius: 10px;
 }
 
 /* ==========================================================================

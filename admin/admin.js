@@ -458,7 +458,8 @@ function renderProjectsList() {
       ? `<img src="${p.thumbnail}" alt="" loading="lazy">`
       : `<span class="item-thumb-placeholder">${p.category === 'video' ? '🎬' : (p.category === 'support' ? '🛠️' : '💻')}</span>`;
 
-    const statusBadge = p.is_published
+    const isPublished = p.is_published !== false && p.is_published !== 0;
+    const statusBadge = isPublished
       ? `<span class="status-indicator published">● Published</span>`
       : `<span class="status-indicator draft">○ Draft</span>`;
 
@@ -561,6 +562,10 @@ window.openNewProject = function() {
   projectForm.reset();
   projIdInput.value = "";
   clearThumbPreview();
+  const conceptCheck = document.getElementById("proj-concept");
+  if (conceptCheck) conceptCheck.checked = true;
+  const pubCheck = document.getElementById("proj-published");
+  if (pubCheck) pubCheck.checked = true;
   projectModal.hidden = false;
 };
 

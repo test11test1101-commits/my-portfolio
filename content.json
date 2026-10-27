@@ -53,7 +53,8 @@
         "JavaScript",
         "UI Concept",
         "Responsive"
-      ]
+      ],
+      "is_published": 1
     },
     {
       "id": 2,
@@ -73,7 +74,8 @@
         "Color Grading",
         "Sound Design",
         "Pacing"
-      ]
+      ],
+      "is_published": 1
     },
     {
       "id": 3,
@@ -93,21 +95,26 @@
         "Documentation",
         "IT Support",
         "Reliability"
-      ]
+      ],
+      "is_published": 1
     },
     {
+      "id": 4,
       "title": "coffee comercial",
       "category": "video",
       "description": "early morning give inspiration while drinking coffee",
-      "detailed_scope": "",
+      "detailed_scope": "Morning commercial edit focusing on warm tone harmonies, ambient steam textures, dynamic slow-motion pacing, and rhythmic acoustic timing.",
       "thumbnail": "assets/uploads/images/1793094240260-ccndac.png",
       "video_url": "",
       "demo_url": "",
       "github_url": "",
-      "tags": [],
+      "tags": [
+        "Commercial",
+        "Color Grading",
+        "Pacing"
+      ],
       "is_concept": 1,
-      "is_published": 0,
-      "id": 4,
+      "is_published": 1,
       "order_index": 4,
       "gallery": []
     }
