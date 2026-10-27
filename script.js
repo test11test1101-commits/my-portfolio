@@ -63,7 +63,11 @@ function updateProfileDOM() {
   document.querySelectorAll("[data-profile]").forEach(node => {
     const key = node.dataset.profile;
     if (key && portfolio[key] !== undefined) {
-      node.textContent = portfolio[key];
+      if (key === "headline") {
+        node.innerHTML = portfolio[key].split("\n").map(l => escapeHtml(l)).join("<br>");
+      } else {
+        node.textContent = portfolio[key];
+      }
     }
   });
 
@@ -241,7 +245,7 @@ async function loadDynamicContent() {
     } catch (_) {}
     if (!res || !res.ok) {
       try {
-        res = await fetch("content.json");
+        res = await fetch(`content.json?_t=${Date.now()}`);
       } catch (_) {}
     }
     if (!res || !res.ok) return;

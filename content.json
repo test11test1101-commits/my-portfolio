@@ -1,15 +1,15 @@
 {
   "success": true,
   "profile": {
-    "name": "Your Name",
-    "headline": "Build the next.\nKeep it running.\nMake it move.",
-    "intro": "Programming, technical support, and video editing \u2014 connected by one creative mind.",
-    "bio": "[Your biography: introduce yourself, your background, and what draws you to programming, technical support, and video editing.]",
-    "approach": "[Your approach: describe how you work, the tools you actually use, and the kinds of projects or roles you would like to explore.]",
-    "location": "[Your city / time zone]",
-    "email": "hello@example.com",
-    "github": "",
-    "linkedin": ""
+    "name": "Richard Ong",
+    "headline": "Secure the infrastructure.\nBuild the software.\nEdit the story.",
+    "intro": "Enterprise IT stability, AI-assisted development, and high-retention video production\u2014driven by 15+ years of hands-on experience.",
+    "bio": "I am an output-driven IT professional and digital creator with over 15 years of enterprise infrastructure experience managing network stability and remote operations across 100+ branches. Alongside my technical background, I leverage modern AI tools (Claude, ChatGPT, Antigravity) to bridge the gap between complex problem-solving and rapid full-stack web development (Python, Flask, SQLite). I am also an experienced short-form video editor and digital content creator, specializing in high-retention storytelling, pacing, and dynamic visual assets.",
+    "approach": "My work style is independent, highly resourceful, and output-oriented. I combine deep technical reliability with modern AI-native workflows to prototype software, manage digital assets, and execute creative media projects rapidly. My goal is to partner with forward-thinking teams as a versatile remote generalist, developer, or video editor who can turn abstract objectives into polished, deployed results.",
+    "location": "Lucena City, Philippines (GMT+8 / PHT)",
+    "email": "reinard328@gmail.com",
+    "github": "https://reianrd328.github.io/myprofile/",
+    "linkedin": "https://www.linkedin.com/in/richard-ong-b93155384"
   },
   "capabilities": [
     {
