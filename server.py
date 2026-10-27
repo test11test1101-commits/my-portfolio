@@ -294,6 +294,42 @@ def delete_session(token: str):
     with get_db() as conn:
         conn.execute("DELETE FROM sessions WHERE token = ?", (token,))
 
+def export_static_content():
+    """Exports current database content to content.json for static hosts like GitHub Pages."""
+    try:
+        with get_db() as conn:
+            cursor = conn.cursor()
+            cursor.execute("SELECT name, headline, intro, bio, approach, location, email, github, linkedin FROM profile WHERE id = 1")
+            profile = dict(cursor.fetchone() or {})
+
+            cursor.execute("SELECT id, order_index, title, description, icon_type FROM capabilities ORDER BY order_index ASC, id ASC")
+            capabilities = [dict(row) for row in cursor.fetchall()]
+
+            cursor.execute("""
+            SELECT id, title, category, description, detailed_scope, thumbnail, gallery_json,
+                   video_url, github_url, demo_url, tags_json, is_concept, order_index
+            FROM projects
+            WHERE is_published = 1
+            ORDER BY order_index ASC, id ASC
+            """)
+            projects = []
+            for row in cursor.fetchall():
+                p = dict(row)
+                p["gallery"] = json.loads(p.pop("gallery_json") or "[]")
+                p["tags"] = json.loads(p.pop("tags_json") or "[]")
+                projects.append(p)
+
+        export_path = os.path.join(BASE_DIR, "content.json")
+        with open(export_path, "w", encoding="utf-8") as f:
+            json.dump({
+                "success": True,
+                "profile": profile,
+                "capabilities": capabilities,
+                "projects": projects
+            }, f, indent=2)
+    except Exception as e:
+        print(f"Failed to export content.json: {e}")
+
 
 # =============================================================================
 # HTTP REQUEST HANDLER
@@ -605,6 +641,7 @@ class CMSHandler(BaseHTTPRequestHandler):
         with get_db() as conn:
             conn.execute(f"UPDATE profile SET {set_clause} WHERE id = 1", values)
 
+        export_static_content()
         self.send_json({"success": True, "message": "Profile saved successfully"})
 
     def handle_update_capabilities(self):
@@ -622,6 +659,7 @@ class CMSHandler(BaseHTTPRequestHandler):
                     (idx, item.get("title", ""), item.get("description", ""), item.get("icon_type", "code"))
                 )
 
+        export_static_content()
         self.send_json({"success": True, "message": "Capabilities saved"})
 
     def handle_create_project(self):
@@ -662,6 +700,7 @@ class CMSHandler(BaseHTTPRequestHandler):
             ))
             new_id = cursor.lastrowid
 
+        export_static_content()
         self.send_json({"success": True, "id": new_id, "message": "Project created"})
 
     def handle_update_project(self, project_id: int):
@@ -695,6 +734,7 @@ class CMSHandler(BaseHTTPRequestHandler):
                 self.send_error_json("Project not found", 404)
                 return
 
+        export_static_content()
         self.send_json({"success": True, "message": "Project updated"})
 
     def handle_delete_project(self, project_id: int):
@@ -705,6 +745,7 @@ class CMSHandler(BaseHTTPRequestHandler):
                 self.send_error_json("Project not found", 404)
                 return
 
+        export_static_content()
         self.send_json({"success": True, "message": "Project deleted"})
 
     def handle_reorder_projects(self):
@@ -718,6 +759,7 @@ class CMSHandler(BaseHTTPRequestHandler):
             for idx, pid in enumerate(order_ids, start=1):
                 conn.execute("UPDATE projects SET order_index = ? WHERE id = ?", (idx, pid))
 
+        export_static_content()
         self.send_json({"success": True, "message": "Projects reordered"})
 
     # -------------------------------------------------------------------------

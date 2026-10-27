@@ -235,8 +235,16 @@ bindFilterTabs();
    -------------------------------------------------------------------------- */
 async function loadDynamicContent() {
   try {
-    const res = await fetch("/api/content");
-    if (!res.ok) return;
+    let res = null;
+    try {
+      res = await fetch("/api/content");
+    } catch (_) {}
+    if (!res || !res.ok) {
+      try {
+        res = await fetch("content.json");
+      } catch (_) {}
+    }
+    if (!res || !res.ok) return;
     const data = await res.json();
     if (!data.success) return;
 
