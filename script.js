@@ -197,8 +197,9 @@ document.querySelectorAll(".project-card").forEach((card, idx) => {
 });
 
 function bindFilterTabs() {
-  const filterTabs = document.querySelectorAll(".filter-tab");
+  const filterTabs = document.querySelectorAll("button.filter-tab");
   const projectCards = document.querySelectorAll(".project-card");
+  if (filterTabs.length === 0) return;
 
   filterTabs.forEach(tab => {
     tab.onclick = () => {
@@ -286,120 +287,52 @@ async function loadDynamicContent() {
       });
     }
 
-    // Render dynamic projects if available
+    // Update Featured Preview Counts & Content
     if (Array.isArray(data.projects) && data.projects.length > 0) {
-      renderProjects(data.projects);
+      updateFeaturedPreviews(data.projects);
     }
   } catch (err) {
     console.log("Using static portfolio data:", err);
   }
 }
 
-function escapeHtml(str) {
-  if (!str) return "";
-  return String(str)
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;");
-}
+function updateFeaturedPreviews(projects) {
+  if (!Array.isArray(projects)) return;
+  const published = projects.filter(p => p.is_published !== 0 && p.is_published !== false);
 
-function renderProjects(projects) {
-  if (!projectGrid) return;
+  const devProjects = published.filter(p => p.category === "development");
+  const videoProjects = published.filter(p => p.category === "video");
+  const supportProjects = published.filter(p => p.category === "support");
 
-  // Filter only published projects (is_published !== 0 and !== false)
-  const publishedProjects = projects.filter(p => p.is_published !== 0 && p.is_published !== false);
-  if (publishedProjects.length === 0) return;
+  // Update Category Project Counters on Preview Cards
+  document.querySelectorAll('[data-cat-count="development"]').forEach(el => el.textContent = `(${devProjects.length})`);
+  document.querySelectorAll('[data-cat-count="video"]').forEach(el => el.textContent = `(${videoProjects.length})`);
+  document.querySelectorAll('[data-cat-count="support"]').forEach(el => el.textContent = `(${supportProjects.length})`);
 
-  // Adjust grid layout when more than 3 projects exist
-  projectGrid.classList.toggle("has-more-projects", publishedProjects.length > 3);
+  // Sync Featured Preview Card Copy if customized in CMS
+  const devCard = document.querySelector('.project-card[data-category="development"]');
+  if (devCard && devProjects.length > 0) {
+    const h3 = devCard.querySelector("h3");
+    const p = devCard.querySelector(".project-copy-main > p");
+    if (h3 && devProjects[0].title) h3.textContent = devProjects[0].title;
+    if (p && devProjects[0].description) p.textContent = devProjects[0].description;
+  }
 
-  projectGrid.innerHTML = publishedProjects.map((p, idx) => {
-    const num = String(idx + 1).padStart(2, "0");
-    const isDev = p.category === "development" && idx === 0 && publishedProjects.length <= 3;
+  const videoCard = document.querySelector('.project-card[data-category="video"]');
+  if (videoCard && videoProjects.length > 0) {
+    const h3 = videoCard.querySelector("h3");
+    const p = videoCard.querySelector(".project-copy-main > p");
+    if (h3 && videoProjects[0].title) h3.textContent = videoProjects[0].title;
+    if (p && videoProjects[0].description) p.textContent = videoProjects[0].description;
+  }
 
-    // Visual Media Element
-    let mediaHtml = "";
-    if (p.video_url && (p.video_url.endsWith(".mp4") || p.video_url.endsWith(".webm") || p.video_url.endsWith(".mov"))) {
-      mediaHtml = `
-        <div class="project-visual video-visual" style="height: 220px; padding:0; overflow:hidden; border-radius:10px;">
-          <video src="${escapeHtml(p.video_url)}" controls style="width:100%; height:100%; object-fit:cover;"></video>
-        </div>
-      `;
-    } else if (p.thumbnail && p.thumbnail !== "assets/mountain-preview.jpg") {
-      mediaHtml = `
-        <div class="project-visual video-visual" style="padding:0; overflow:hidden; border-radius:10px;">
-          <div class="video-preview-frame full-radius" style="position:relative; width:100%; height:240px;">
-            <img src="${escapeHtml(p.thumbnail)}" alt="${escapeHtml(p.title)}" style="width:100%; height:100%; object-fit:cover;" loading="lazy">
-            ${p.category === 'video' ? `
-              <div class="video-play-disc" aria-label="Play preview">
-                <span class="play-triangle">▶</span>
-              </div>
-            ` : ''}
-          </div>
-        </div>
-      `;
-    } else if (initialProjectVisuals[idx]) {
-      // Preserve handcrafted 3D platform / timeline / network diagram
-      mediaHtml = initialProjectVisuals[idx];
-    } else if (p.thumbnail) {
-      mediaHtml = `
-        <div class="project-visual video-visual" style="padding:0; overflow:hidden; border-radius:10px;">
-          <div class="video-preview-frame full-radius" style="position:relative; width:100%; height:240px;">
-            <img src="${escapeHtml(p.thumbnail)}" alt="${escapeHtml(p.title)}" style="width:100%; height:100%; object-fit:cover;" loading="lazy">
-          </div>
-        </div>
-      `;
-    } else {
-      mediaHtml = `
-        <div class="project-visual" style="height: 200px; display:grid; place-items:center; background: linear-gradient(135deg, #e9edf6, #dce2ef); color: var(--accent); font-size: 38px; border-radius: 10px;">
-          <span>${p.category === 'video' ? '🎬' : (p.category === 'support' ? '🛠️' : '💻')}</span>
-        </div>
-      `;
-    }
-
-    const tagsHtml = (p.tags || []).map(t => `<span>${escapeHtml(t)}</span>`).join("");
-
-    const linksHtml = `
-      ${p.demo_url ? `<a href="${escapeHtml(p.demo_url)}" target="_blank" rel="noopener noreferrer" class="project-live-link">Live Demo ↗</a>` : ''}
-      ${p.github_url ? `<a href="${escapeHtml(p.github_url)}" target="_blank" rel="noopener noreferrer" class="project-live-link" style="margin-left: 12px;">GitHub ↗</a>` : ''}
-      ${p.video_url && !p.video_url.endsWith(".mp4") && !p.video_url.endsWith(".webm") ? `<a href="${escapeHtml(p.video_url)}" target="_blank" rel="noopener noreferrer" class="project-live-link">Watch Video ↗</a>` : ''}
-    `;
-
-    return `
-      <article class="project-card ${isDev ? 'development-card' : ''} glass" data-category="${escapeHtml(p.category)}">
-        <div class="project-label">
-          <span class="concept-badge"><i class="status-dot green"></i> ${p.is_concept ? 'CONCEPT PROJECT' : 'PROJECT'}</span>
-          <span class="project-num">${num}</span>
-        </div>
-
-        ${mediaHtml}
-
-        <div class="project-copy">
-          <div class="project-copy-main">
-            <h3>${escapeHtml(p.title)}</h3>
-            <p>${escapeHtml(p.description)}</p>
-            <div class="tags">${tagsHtml}</div>
-            ${p.detailed_scope ? `
-              <details class="concept-disclosure">
-                <summary>Explore details <span class="summary-arrow" aria-hidden="true">↗</span></summary>
-                <div class="disclosure-body">
-                  <p>${escapeHtml(p.detailed_scope)}</p>
-                  ${linksHtml}
-                </div>
-              </details>
-            ` : (linksHtml.trim() ? `<div style="padding-top:8px;">${linksHtml}</div>` : '')}
-          </div>
-          <a class="card-circle-btn" href="#work" aria-label="${escapeHtml(p.title)} details">
-            <span class="circle-btn-arrow" aria-hidden="true">→</span>
-          </a>
-        </div>
-      </article>
-    `;
-  }).join("");
-
-  bindFilterTabs();
+  const supportCard = document.querySelector('.project-card[data-category="support"]');
+  if (supportCard && supportProjects.length > 0) {
+    const h3 = supportCard.querySelector("h3");
+    const p = supportCard.querySelector(".project-copy-main > p");
+    if (h3 && supportProjects[0].title) h3.textContent = supportProjects[0].title;
+    if (p && supportProjects[0].description) p.textContent = supportProjects[0].description;
+  }
 }
 
 // Start dynamic content fetch

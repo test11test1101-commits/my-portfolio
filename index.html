@@ -34,8 +34,11 @@
     </button>
 
     <nav id="navigation" aria-label="Main navigation">
-      <a href="#work">Work</a>
-      <a href="#capabilities">Capabilities</a>
+      <a href="#work">Featured Work</a>
+      <a href="projects.html">All Work</a>
+      <a href="development.html">Web Design</a>
+      <a href="support.html">Tech Support</a>
+      <a href="video.html">Video Editing</a>
       <a href="#about">About</a>
       <a href="#contact">Contact</a>
     </nav>
@@ -173,23 +176,23 @@
          ORBIT STRIP / FILTER TABS
          ========================================================================= -->
     <div class="orbit-strip shell" id="work-strip">
-      <div class="filters" role="tablist" aria-label="Filter projects by specialty">
-        <button class="filter-tab active" type="button" role="tab" data-filter="all" aria-selected="true">
-          <span class="tab-index">00 /</span> ALL WORK
-        </button>
-        <button class="filter-tab" type="button" role="tab" data-filter="development" aria-selected="false">
-          <span class="tab-index">01 /</span> DEVELOPMENT
-        </button>
-        <button class="filter-tab" type="button" role="tab" data-filter="support" aria-selected="false">
-          <span class="tab-index">02 /</span> TECH SUPPORT
-        </button>
-        <button class="filter-tab" type="button" role="tab" data-filter="video" aria-selected="false">
-          <span class="tab-index">03 /</span> VIDEO EDITING
-        </button>
+      <div class="filters" role="navigation" aria-label="Browse specialty pages">
+        <a class="filter-tab active" href="projects.html">
+          <span class="tab-index">00 /</span> ALL WORK ↗
+        </a>
+        <a class="filter-tab" href="development.html">
+          <span class="tab-index">01 /</span> WEB DESIGN &amp; CODE ↗
+        </a>
+        <a class="filter-tab" href="support.html">
+          <span class="tab-index">02 /</span> TECH SUPPORT ↗
+        </a>
+        <a class="filter-tab" href="video.html">
+          <span class="tab-index">03 /</span> VIDEO EDITING ↗
+        </a>
       </div>
       <div class="strip-legend" aria-hidden="true">
         <span class="legend-line"></span>
-        <span class="legend-text">THREE SKILLS.<br>A WIDER ORBIT.</span>
+        <span class="legend-text">THREE SPECIALTIES.<br>CLICK TO EXPLORE.</span>
       </div>
     </div>
 
@@ -200,13 +203,13 @@
       <div class="section-heading">
         <div>
           <h2 id="work-title">Work in orbit<span class="accent">.</span></h2>
-          <p class="section-sub">Concept projects across code, systems, and storytelling.</p>
+          <p class="section-sub">Signature preview samples. Click any discipline to explore full galleries.</p>
         </div>
         <span class="micro section-code" aria-hidden="true">— IDEAS → SYSTEMS → STORIES —</span>
       </div>
 
       <p id="filter-status" class="sr-only" role="status" aria-live="polite" aria-atomic="true">
-        Showing all 3 concept projects across development, tech support, and video editing.
+        Showing signature concept previews across development, tech support, and video editing.
       </p>
 
       <!-- Projects Grid: 01 Left Tall, 02 Top-Right, 03 Bottom-Right -->
@@ -317,8 +320,9 @@
                   <a class="project-live-link" data-project-link="development" hidden>Live Project ↗</a>
                 </div>
               </details>
+              <a href="development.html" class="category-page-btn">View All Web Design Projects <span class="cat-count" data-cat-count="development">(1)</span> →</a>
             </div>
-            <a class="card-circle-btn" href="#work" aria-label="Web development project details">
+            <a class="card-circle-btn" href="development.html" aria-label="Explore all Web Development projects">
               <span class="circle-btn-arrow" aria-hidden="true">→</span>
             </a>
           </div>
@@ -377,9 +381,10 @@
                   <a class="project-live-link" data-project-link="video" hidden>Live Project ↗</a>
                 </div>
               </details>
+              <a href="video.html" class="category-page-btn">View All Video Editing Projects <span class="cat-count" data-cat-count="video">(2)</span> →</a>
             </div>
-            <a class="card-circle-btn" href="#work" aria-label="Video editing project details">
-              <span class="circle-btn-arrow" aria-hidden="true">↗</span>
+            <a class="card-circle-btn" href="video.html" aria-label="Explore all Video Editing projects">
+              <span class="circle-btn-arrow" aria-hidden="true">→</span>
             </a>
           </div>
         </article>
@@ -483,8 +488,9 @@
                   <a class="project-live-link" data-project-link="support" hidden>Live Project ↗</a>
                 </div>
               </details>
+              <a href="support.html" class="category-page-btn">View All Tech Support Projects <span class="cat-count" data-cat-count="support">(1)</span> →</a>
             </div>
-            <a class="card-circle-btn" href="#work" aria-label="Technical support project details">
+            <a class="card-circle-btn" href="support.html" aria-label="Explore all Technical Support projects">
               <span class="circle-btn-arrow" aria-hidden="true">→</span>
             </a>
           </div>

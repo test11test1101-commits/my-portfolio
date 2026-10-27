@@ -292,7 +292,8 @@ input:focus, select:focus, textarea:focus {
 .dash-brand {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 8px;
+  flex-wrap: wrap;
 }
 
 .dash-title {
