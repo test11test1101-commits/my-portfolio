@@ -3,7 +3,7 @@
   "profile": {
     "name": "Richard Ong",
     "headline": "Secure the infrastructure.\nBuild the software.\nEdit the story.",
-    "intro": "Enterprise IT stability, AI-assisted development, and high-retention video production\u2014driven by 15+ years of hands-on experience.",
+    "intro": "Enterprise IT stability, AI-assisted development, and high-retention video production—driven by 15+ years of hands-on experience.",
     "bio": "I am an output-driven IT professional and digital creator with over 15 years of enterprise infrastructure experience managing network stability and remote operations across 100+ branches. Alongside my technical background, I leverage modern AI tools (Claude, ChatGPT, Antigravity) to bridge the gap between complex problem-solving and rapid full-stack web development (Python, Flask, SQLite). I am also an experienced short-form video editor and digital content creator, specializing in high-retention storytelling, pacing, and dynamic visual assets.",
     "approach": "My work style is independent, highly resourceful, and output-oriented. I combine deep technical reliability with modern AI-native workflows to prototype software, manage digital assets, and execute creative media projects rapidly. My goal is to partner with forward-thinking teams as a versatile remote generalist, developer, or video editor who can turn abstract objectives into polished, deployed results.",
     "location": "Lucena City, Philippines (GMT+8 / PHT)",
@@ -94,6 +94,22 @@
         "IT Support",
         "Reliability"
       ]
+    },
+    {
+      "title": "coffee comercial",
+      "category": "video",
+      "description": "early morning give inspiration while drinking coffee",
+      "detailed_scope": "",
+      "thumbnail": "assets/uploads/images/1793094240260-ccndac.png",
+      "video_url": "",
+      "demo_url": "",
+      "github_url": "",
+      "tags": [],
+      "is_concept": 1,
+      "is_published": 0,
+      "id": 4,
+      "order_index": 4,
+      "gallery": []
     }
   ]
 }
